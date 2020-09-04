@@ -1,10 +1,10 @@
-"  _______________________________OG_______________________________
+                                         "  _______________________________OG_______________________________
 set nocompatible                         "  system-wide vimrc
 set backspace=indent,eol,start           "  backspace over indentation, etc
 set ruler                                "  always show cursor position
 set splitright                           "  default split right
-set relativenumber                       "  show relative line number of left
-set number                               "  show current line number at cursor
+"set relativenumber                       "  show relative line number of left
+"set number                               "  show current line number at cursor
 set cursorline                           "  line at cursor row
 set incsearch                            "  incremental search for partial /
 set hlsearch                             "  search highlighting /
@@ -30,8 +30,41 @@ set clipboard^=unnamed,unnamedplus       "  use system clipboard
 set scrolloff=10                         "  lines of buffer between top and bottom
 set ttimeout
 set ttimeoutlen=0
-set timeoutlen=1000                      "  time in between commands v,c
+set timeoutlen=1000                       "  time in between commands v,c
 syntax enable                            "  colors, overrule with on
+
+set termguicolors
+let &t_ZH='\e[3m'                        "  italics
+let &t_ZR='\e[23m'                       "  italics
+highlight Comment cterm=italic
+colo iceberg                             "  current color theme
+
+
+
+set number relativenumber
+augroup numbertoggle "only use relativenumber on current window
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  "autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
+set numberwidth=2
+highlight LineNr guibg=NONE
+highlight clear CursorLineNR
+highlight clear SignColumn
+highlight clear LineNr
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 "  auto read when leaving window
@@ -47,6 +80,9 @@ au CursorHold,CursorHoldI * checktime
 " default 
   map <Space> <Leader>
   let mapleader = "\<Space>"
+  " lazybois remap ; to :, it's fine cause w/ clever-f you can just repeat f
+  :nmap ; :
+
 
 " nav
   nnoremap J 5j
@@ -64,11 +100,15 @@ au CursorHold,CursorHoldI * checktime
   noremap c "_c
   noremap cc "_cc
   noremap C "_C
-  "ctrl backspace to delete word?
+  " ctrl backspace to delete word?
   imap <C-BS> <C-W>
+  " duplicate
+  noremap du Yp
+  vnoremap du yp
 
 " undo
   noremap U <C-r><CR>
+
 
 
 
@@ -131,12 +171,13 @@ call plug#begin('~/.vim/autoload')
   Plug 'tpope/vim-fugitive'
     nnoremap <silent> <leader>gs :Gstatus<CR>
     nnoremap <silent> <leader>gd :Gdiff<CR>
+    set diffopt+=vertical "make diff vertical split
   Plug 'mhinz/vim-signify'
      set updatetime=100
      let g:signify_line_highlight = 1
-     highlight SignifyLineAdd    ctermfg = black ctermbg=DarkGreen      guifg=#005f00             guibg=#005f00
-     highlight SignifyLineChange ctermfg = black ctermbg=DarkYellow    guifg=#ffffff guibg=#ff0000
-     highlight SignifyLineDelete ctermfg = black ctermbg=red       guifg=#000000 guibg=#ffff00
+     highlight SignifyLineAdd ctermfg=Black ctermbg=Black guibg=#226823
+     highlight SignifyLineChange ctermfg=Black ctermbg=DarkYellow guibg=#685a22
+     highlight SignifyLineDelete ctermfg=Black ctermbg=DarkRed guibg=#682b22
 
 " language
   Plug 'vim-ruby/vim-ruby'
@@ -145,6 +186,44 @@ call plug#begin('~/.vim/autoload')
   Plug 'othree/javascript-libraries-syntax.vim'
   Plug 'hynek/vim-python-pep8-indent'
   Plug 'mxw/vim-jsx'
+
+" theme
+  Plug 'cocopon/iceberg.vim'
+
+  "Plug 'junegunn/seoul256.vim'
+
+  "Plug 'nightsense/snow'
+  "colo seoul256
+  "let g:seoul256_background = 234
+  "set background=dark
+
+  "Plug 'nightsense/snow'
+  "colorscheme snow
+
+  "Plug 'nightsense/stellarized'
+  "colo stellarized
+
+  "Plug 'chriskempson/base16-vim'
+  "let base16colorspace=256
+  "colorscheme base16-default-dark
+
+
+  "Plug 'nanotech/jellybeans.vim'
+  "colorscheme jellybeans
+
+  "Plug 'joshdick/onedark.vim'
+  "colorscheme onedark
+
+  "Plug 'huyvohcmc/atlas.vim'
+  "colorscheme atlas
+
+  "Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
+  "colorscheme challenger_deep
+
+
+
+
+
  
 call plug#end()
 
@@ -214,11 +293,18 @@ call plug#end()
   nmap <Leader>b :Buffers<CR>
   nmap <Leader>h :History<CR>
   nnoremap <leader>w :w<CR>
-  cnoreabbrev Q :browse oldfiles              " open :History  in FZF
+  " should open :History  in FZF
+  cnoreabbrev Q :browse oldfiles 
+  command! FZFMru call fzf#run({
+  \  'source':  v:oldfiles,
+  \  'sink':    'e',
+  \  'options': '-m -x +s',
+  \  'down':    '40%'})
   cnoreabbrev QQ :History
   cnoreabbrev tree :Explore
   cnoreabbrev b :Buffers
-
+  cnoreabbrev b :Buffers
+  cnoreabbrev .. cd ..
 
 " source / edit
   " source vimrc
@@ -245,6 +331,7 @@ call plug#end()
 " buffers
   cnoreabbrev save :SSave
   cnoreabbrev load :SLoad
+  cnoreabbrev delete :SDelete
   "yank relative buffer path
   nnoremap <Leader>yp :let @+=expand("%")<CR> 
   " Copy current file path to clipboard
@@ -289,17 +376,37 @@ nnoremap <silent> <Leader>= <C-w>=
 
 
 " Switch between tabs
-nmap <leader>1 1gt
-nmap <leader>2 2gt
-nmap <leader>3 3gt
-nmap <leader>4 4gt
-nmap <leader>5 5gt
-nmap <leader>6 6gt
-nmap <leader>7 7gt
-nmap <leader>8 8gt
-nmap <leader>9 9gt
-" add Switch between buffers w/ !@#$%^&*()
+"nmap <leader>1 1gt
+"nmap <leader>2 2gt
+"nmap <leader>3 3gt
+"nmap <leader>4 4gt
+"nmap <leader>5 5gt
+"nmap <leader>6 6gt
+"nmap <leader>7 7gt
+"nmap <leader>8 8gt
+"nmap <leader>9 9gt
 
+" Switch between windows
+let i = 1
+while i <= 9
+    execute 'nnoremap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
+    let i = i + 1
+endwhile
+" go back to previously selected window
+nnoremap <Leader>0 <c-w><c-p>
+
+" put window # in status line
+"set statusline+=%{WindowNumber()}
+function! WindowNumber()
+    let str=tabpagewinnr(tabpagenr())
+    return str
+endfunction
+
+set statusline=%{WindowNumber()}\ %f\ %h%w%m%r%=%-14.(%l,%c%V%)\ %P
+
+"set statusline=\ %{WindowNumber()}\ %t 
+
+" add Switch between buffers w/ !@#$%^&*()
 
 " Creating splits with empty buffers in all directions
 nnoremap <Leader>hn :leftabove  vnew<CR>
@@ -307,7 +414,25 @@ nnoremap <Leader>ln :rightbelow vnew<CR>
 nnoremap <Leader>kn :leftabove  new<CR>
 nnoremap <Leader>jn :rightbelow new<CR>
 
+nnoremap <Leader>HH :leftabove  vnew<CR>:Rg<CR>
+nnoremap <Leader>LL :rightbelow vnew<CR>:Rg<CR>
+nnoremap <Leader>KK :leftabove  new<CR>:Rg<CR>
+nnoremap <Leader>JJ :rightbelow new<CR>:Rg<CR>
 
+nnoremap <Leader>H<Space>  :leftabove  vnew<CR>:Rg<CR>
+nnoremap <Leader>L<Space>  :rightbelow vnew<CR>:Rg<CR>
+nnoremap <Leader>K<Space>  :leftabove  new<CR>:Rg<CR>
+nnoremap <Leader>J<Space>  :rightbelow new<CR>:Rg<CR>
+
+nnoremap <silent> <Leader>hh :call JumpOrOpenNewSplit('h', ':leftabove vnew', 0)<CR>
+nnoremap <silent> <Leader>ll :call JumpOrOpenNewSplit('l', ':rightbelow vnew', 0)<CR>
+nnoremap <silent> <Leader>kk :call JumpOrOpenNewSplit('k', ':leftabove vnew', 0)<CR>
+nnoremap <silent> <Leader>jj :call JumpOrOpenNewSplit('j', ':rightbelow vnew', 0)<CR>
+
+nnoremap <silent> <Leader>h<Space> :call JumpOrOpenNewSplit('h', ':leftabove vsplit', 1)<CR>
+nnoremap <silent> <Leader>l<Space> :call JumpOrOpenNewSplit('l', ':rightbelow vsplit', 1)<CR>
+nnoremap <silent> <Leader>k<Space> :call JumpOrOpenNewSplit('k', ':leftabove split', 1)<CR>
+nnoremap <silent> <Leader>j<Space> :call JumpOrOpenNewSplit('j', ':rightbelow split', 1)<CR>
 
 " If split in given direction exists - jump, else create new split
 function! JumpOrOpenNewSplit(key, cmd, fzf) " {{{
@@ -317,23 +442,18 @@ function! JumpOrOpenNewSplit(key, cmd, fzf) " {{{
     execute a:cmd
     if a:fzf
       Files
+    else
+      Rg
     endif
   else
     if a:fzf
       Files
+    else
+      Rg
     endif
   endif
 endfunction " }}}
-nnoremap <silent> <Leader>hh :call JumpOrOpenNewSplit('h', ':leftabove vsplit', 0)<CR>
-nnoremap <silent> <Leader>ll :call JumpOrOpenNewSplit('l', ':rightbelow vsplit', 0)<CR>
-nnoremap <silent> <Leader>kk :call JumpOrOpenNewSplit('k', ':leftabove split', 0)<CR>
-nnoremap <silent> <Leader>jj :call JumpOrOpenNewSplit('j', ':rightbelow split', 0)<CR>
 
-" Same as above, except it opens unite at the end
-nnoremap <silent> <Leader>h<Space> :call JumpOrOpenNewSplit('h', ':leftabove vsplit', 1)<CR>
-nnoremap <silent> <Leader>l<Space> :call JumpOrOpenNewSplit('l', ':rightbelow vsplit', 1)<CR>
-nnoremap <silent> <Leader>k<Space> :call JumpOrOpenNewSplit('k', ':leftabove split', 1)<CR>
-nnoremap <silent> <Leader>j<Space> :call JumpOrOpenNewSplit('j', ':rightbelow split', 1)<CR>
+
 
 "ADD LEADER L F to CREATE NEW FIND WINDOW
-
