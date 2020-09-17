@@ -1,3 +1,119 @@
+"  _______________________________PLUGS_______________________________
+"  :PlugInstall, :PlugClean
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/autoload')
+
+" file search
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
+
+" text search
+  Plug 'jremmen/vim-ripgrep'
+  Plug 'mileszs/ack.vim'
+  Plug 'epmatsw/ag.vim'
+
+" tmux navigation
+  Plug 'christoomey/vim-tmux-navigator'
+  " default home screen
+  Plug 'mhinz/vim-startify'
+    let g:startify_files_number = 15
+
+" syntax
+  Plug 'tpope/vim-sensible'
+  " deletes around ) , etc
+  Plug 'wellle/targets.vim'
+  " keep pressing f for find
+  Plug 'rhysd/clever-f.vim'
+    let g:clever_f_across_no_line = 1
+  " automatically closes quotes
+  Plug 'tmsvg/pear-tree'
+    let g:pear_tree_repeatable_expand = 0
+    let g:pear_tree_smart_backspace   = 1
+    let g:pear_tree_smart_closers     = 1
+    let g:pear_tree_smart_openers     = 1
+  " <leader + /> to comment
+  Plug 'scrooloose/nerdcommenter'
+  " multiple cursor w/ <C-n>
+  Plug 'terryma/vim-multiple-cursors'
+  " easily add/remove parents
+  Plug 'tpope/vim-surround'
+  " extend repeat commands
+  Plug 'tpope/vim-repeat'
+  " autoindent stuff, visual-mode, ga + <align-by>
+  Plug 'junegunn/vim-easy-align'
+    xmap ga <Plug>(EasyAlign)
+    nmap ga <Plug>(EasyAlign)
+
+
+
+" git gud
+  Plug 'tpope/vim-fugitive'
+    nnoremap <silent> <leader>gs :Gstatus<CR>
+    nnoremap <silent> <leader>gd :Gdiff<CR>
+    set diffopt+=vertical "make diff vertical split
+  Plug 'mhinz/vim-signify'
+     set updatetime=100
+     let g:signify_line_highlight = 1
+     highlight SignifyLineAdd ctermfg=Black ctermbg=Black guibg=#226823
+     highlight SignifyLineChange ctermfg=Black ctermbg=DarkYellow guibg=#685a22
+     highlight SignifyLineDelete ctermfg=Black ctermbg=DarkRed guibg=#682b22
+
+" language
+  Plug 'vim-ruby/vim-ruby'
+  Plug 'tpope/vim-rails'
+  Plug 'othree/html5.vim'
+  Plug 'othree/javascript-libraries-syntax.vim'
+  Plug 'hynek/vim-python-pep8-indent'
+  Plug 'mxw/vim-jsx'
+
+" theme
+  Plug 'cocopon/iceberg.vim'
+
+  "Plug 'junegunn/seoul256.vim'
+
+  "Plug 'nightsense/snow'
+  "colo seoul256
+  "let g:seoul256_background = 234
+  "set background=dark
+
+  "Plug 'nightsense/snow'
+  "colorscheme snow
+
+  "Plug 'nightsense/stellarized'
+  "colo stellarized
+
+  "Plug 'chriskempson/base16-vim'
+  "let base16colorspace=256
+  "colorscheme base16-default-dark
+
+
+  "Plug 'nanotech/jellybeans.vim'
+  "colorscheme jellybeans
+
+  "Plug 'joshdick/onedark.vim'
+  "colorscheme onedark
+
+  "Plug 'huyvohcmc/atlas.vim'
+  "colorscheme atlas
+
+  "Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
+  "colorscheme challenger_deep
+
+
+
+
+
+
+call plug#end()
+
+
+
                                          "  _______________________________OG_______________________________
 set nocompatible                         "  system-wide vimrc
 set backspace=indent,eol,start           "  backspace over indentation, etc
@@ -5,6 +121,7 @@ set ruler                                "  always show cursor position
 set splitright                           "  default split right
 "set relativenumber                       "  show relative line number of left
 "set number                               "  show current line number at cursor
+set mouse=a
 set cursorline                           "  line at cursor row
 set incsearch                            "  incremental search for partial /
 set hlsearch                             "  search highlighting /
@@ -113,125 +230,12 @@ au CursorHold,CursorHoldI * checktime
 
 
 
-"  _______________________________PLUGS_______________________________
-"  :PlugInstall, :PlugClean
-
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
-call plug#begin('~/.vim/autoload')
-
-" file search
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-  Plug 'junegunn/fzf.vim'
-
-" text search
-  Plug 'jremmen/vim-ripgrep'
-  Plug 'mileszs/ack.vim'
-  Plug 'epmatsw/ag.vim'
-
-" tmux navigation
-  Plug 'christoomey/vim-tmux-navigator'
-  " default home screen
-  Plug 'mhinz/vim-startify'
-    let g:startify_files_number = 15
- 
-" syntax
-  Plug 'tpope/vim-sensible'
-  " deletes around ) , etc
-  Plug 'wellle/targets.vim'
-  " keep pressing f for find
-  Plug 'rhysd/clever-f.vim'
-    let g:clever_f_across_no_line = 1
-  " automatically closes quotes
-  Plug 'tmsvg/pear-tree'
-    let g:pear_tree_repeatable_expand = 0
-    let g:pear_tree_smart_backspace   = 1
-    let g:pear_tree_smart_closers     = 1
-    let g:pear_tree_smart_openers     = 1
-  " <leader + /> to comment
-  Plug 'scrooloose/nerdcommenter'
-  " multiple cursor w/ <C-n>
-  Plug 'terryma/vim-multiple-cursors'
-  " easily add/remove parents
-  Plug 'tpope/vim-surround'
-  " extend repeat commands
-  Plug 'tpope/vim-repeat'
-  " autoindent stuff, visual-mode, ga + <align-by>
-  Plug 'junegunn/vim-easy-align'
-    xmap ga <Plug>(EasyAlign)
-    nmap ga <Plug>(EasyAlign)
-
-
-
-" git gud
-  Plug 'tpope/vim-fugitive'
-    nnoremap <silent> <leader>gs :Gstatus<CR>
-    nnoremap <silent> <leader>gd :Gdiff<CR>
-    set diffopt+=vertical "make diff vertical split
-  Plug 'mhinz/vim-signify'
-     set updatetime=100
-     let g:signify_line_highlight = 1
-     highlight SignifyLineAdd ctermfg=Black ctermbg=Black guibg=#226823
-     highlight SignifyLineChange ctermfg=Black ctermbg=DarkYellow guibg=#685a22
-     highlight SignifyLineDelete ctermfg=Black ctermbg=DarkRed guibg=#682b22
-
-" language
-  Plug 'vim-ruby/vim-ruby'
-  Plug 'tpope/vim-rails'
-  Plug 'othree/html5.vim'
-  Plug 'othree/javascript-libraries-syntax.vim'
-  Plug 'hynek/vim-python-pep8-indent'
-  Plug 'mxw/vim-jsx'
-
-" theme
-  Plug 'cocopon/iceberg.vim'
-
-  "Plug 'junegunn/seoul256.vim'
-
-  "Plug 'nightsense/snow'
-  "colo seoul256
-  "let g:seoul256_background = 234
-  "set background=dark
-
-  "Plug 'nightsense/snow'
-  "colorscheme snow
-
-  "Plug 'nightsense/stellarized'
-  "colo stellarized
-
-  "Plug 'chriskempson/base16-vim'
-  "let base16colorspace=256
-  "colorscheme base16-default-dark
-
-
-  "Plug 'nanotech/jellybeans.vim'
-  "colorscheme jellybeans
-
-  "Plug 'joshdick/onedark.vim'
-  "colorscheme onedark
-
-  "Plug 'huyvohcmc/atlas.vim'
-  "colorscheme atlas
-
-  "Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
-  "colorscheme challenger_deep
-
-
-
-
-
- 
-call plug#end()
-
 
 
 
 "  _______________________________FILE NAVIGATION_______________________________
 " :Explore, file navigation
+  let g:netrw_preview = 1
   let g:netrw_liststyle = 3      " tree structure
   let g:netrw_banner = 0         " remove banner
   let g:netrw_browse_split = 2   " default open vertical split
@@ -261,18 +265,18 @@ call plug#end()
   command! -bang -nargs=* Rg
     \ call fzf#vim#grep(
     \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-    \   fzf#vim#with_preview(), <bang>0)
+    \   fzf#vim#with_preview(), <bang>0 )
 
 " RG full screen
-  command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+  "command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
-  function! RipgrepFzf(query, fullscreen)
-    let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
-    let reload_command = printf(command_fmt, '{q}')
-    let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-    call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-  endfunction
+  "function! RipgrepFzf(query, fullscreen)
+    "let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+    "let initial_command = printf(command_fmt, shellescape(a:query))
+    "let reload_command = printf(command_fmt, '{q}')
+    "let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+    "call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+  "endfunction
 
 
 
@@ -288,19 +292,21 @@ call plug#end()
   " go to definition
   nnoremap <leader>d :vsplit<CR>:exec("tag ".expand("<cword>"))<CR>
 
+  map <leader>t :Explore<cr>
+
 
 " general
   nmap <Leader>b :Buffers<CR>
   nmap <Leader>h :History<CR>
   nnoremap <leader>w :w<CR>
   " should open :History  in FZF
-  cnoreabbrev Q :browse oldfiles 
+  cnoreabbrev QQ :browse oldfiles 
   command! FZFMru call fzf#run({
   \  'source':  v:oldfiles,
   \  'sink':    'e',
   \  'options': '-m -x +s',
   \  'down':    '40%'})
-  cnoreabbrev QQ :History
+  cnoreabbrev Q :History
   cnoreabbrev tree :Explore
   cnoreabbrev b :Buffers
   cnoreabbrev b :Buffers
@@ -443,17 +449,18 @@ function! JumpOrOpenNewSplit(key, cmd, fzf) " {{{
     if a:fzf
       Files
     else
-      Rg
+      :Rg
     endif
   else
     if a:fzf
       Files
     else
-      Rg
+      :Rg
     endif
   endif
 endfunction " }}}
 
 
-
 "ADD LEADER L F to CREATE NEW FIND WINDOW
+
+vim README.md

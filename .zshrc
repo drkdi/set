@@ -8,21 +8,19 @@
 # sourcing
 if [[ -f ~/.tc_settings ]]; then
   source ~/.tc_settings
-fi
-
-if [[ -f /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-  source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
-
-if [[ -f ~/.oh-my-zsh ]]; then
-  source ~/.oh-my-zsh
+  alias st='source $HOME/.tc_settings'
 fi
 
 if [[ -f ~/.personal ]]; then
   source ~/.personal
+  alias st='source $HOME/.personal'
 fi
 
 #_______ZSH STUFF_________
+if [[ -f ~/.oh-my-zsh ]]; then
+  source ~/.oh-my-zsh
+fi
+
 
 ZSH_THEME=""
 CASE_SENSITIVE="false"
@@ -31,6 +29,7 @@ plugins=(git)
 fpath=(~/.zsh $fpath)
 autoload -Uz compinit && compinit
 autoload -U promptinit; promptinit
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 prompt pure
 
 #_______GIT STUFF_________
@@ -80,7 +79,8 @@ function reset() {
 export TERM="xterm-256color"
 alias ..='cd ..'
 alias c=code
-alias v=vim
+alias v='vim -S ~/.vimrc'
+alias vim='vim -S ~/.vimrc'
 alias q=r
 alias stats="watch -n1 istats --no-graphs"
 set editing-mode v
@@ -118,6 +118,20 @@ function kill() {
 }
 
 alias rag='vim `rg "what" | fzf`'
+
+function regex() {
+  gawk 'match($0,/'$1'/, ary) {print ary['${2:-'0'}']}'
+}
+
+function git_repo() {
+  if [ ! -d .git ] ;
+    then echo "ERROR: This isnt a git directory" && return false;
+  fi
+
+  git config --get remote.origin.url | regex "\/(.*)\.git" 1
+}
+
+
 
 # add ripgrep stuff
 
@@ -218,17 +232,4 @@ alias rag='vim `rg "what" | fzf`'
   #eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
 #}
 
-#function regex() {
-	#gawk 'match($0,/'$1'/, ary) {print ary['${2:-'0'}']}'
-#}
-
-#see what git you're in
-#function git_repo() {
-  #if [ ! -d .git ] ;
-    #then echo "ERROR: This isnt a git directory" && return false;
-  #fi
-
-  #git config --get remote.origin.url | regex "\/(.*)\.git" 1
-#}
-
-
+source /Users/d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
