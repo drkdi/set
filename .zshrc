@@ -1,6 +1,11 @@
 #!/bin/zsh
 
 
+#todo:
+# CREATE ..3, repeat .. 3 times
+# automatically create alias, takes input and current directory, append to TC
+
+
 # new machine:
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 # defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
@@ -8,7 +13,7 @@
 # sourcing
 if [[ -f ~/.tc_settings ]]; then
   source ~/.tc_settings
-  alias st='source $HOME/.tc_settings'
+  alias st='source $HOME/.tc_settings; echo "sourced tc_settings"'
 fi
 
 if [[ -f ~/.personal ]]; then
@@ -51,7 +56,25 @@ alias gd='git diff'
 alias gf='git checkout `git branch --format="%(refname:short)" | fzf`'
 alias gdel='git branch -d'
 alias gpom='git pull origin master'
-alias nah="git reset --hard"
+#alias nah="git reset --hard"
+
+# reset file if provided, otherwise entire branch
+#  TODO: create han, delete everything BUT what's passed in
+#   take any number of optional arguments,
+
+function mah() {
+  if [[ "$1" ]]; then
+    git checkout integration "$1"
+  fi
+}
+
+function nah() {
+  if [[ "$1" ]]; then
+    git checkout -- "$1"
+  else
+    git reset --hard 
+  fi
+}
 
 
 function gac() {
@@ -84,12 +107,15 @@ alias vim='vim -S ~/.vimrc'
 alias q=r
 alias stats="watch -n1 istats --no-graphs"
 set editing-mode v
+
+# search history with fzf and execute
 function qq() { 
-  fc -lim "*$@*" 1 
+  #print -z $( ([ -n "$ZSH_NAME" ] && fc -li 1 || history) | fzf +s --tac --height "50%" | sed -E 's/ *[0-9]*\*? *//' | sed -E 's/\\/\\\\/g')
+  print -z $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac --height "50%" | sed -E 's/ *[0-9]*\*? *//' | sed -E 's/\\/\\\\/g')
 }
 
 # sourcing
-alias sz='source $HOME/.zshrc'
+alias sz='source $HOME/.zshrc ; echo "sourced .zshrc"'
 alias ve='v $HOME/.vimrc'
 alias ze='v $HOME/.zshrc'
 alias te='v $HOME/.tc_settings'
@@ -100,6 +126,7 @@ alias notes='v $HOME/notes.md'
 alias ctags="`brew --prefix`/bin/ctags"
 alias t='vim -t "$(cut -f1 tags | tail +7 | uniq | fzf)"'
 alias tags="ctags -R --exclude=node_modules --exclude=public --exclude=vendor --exclude=db --exclude=tmp"
+
 
 
 # FZF
@@ -232,4 +259,3 @@ function git_repo() {
   #eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
 #}
 
-source /Users/d/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

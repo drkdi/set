@@ -8,7 +8,6 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/autoload')
-
 " file search
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
@@ -37,7 +36,7 @@ call plug#begin('~/.vim/autoload')
     let g:pear_tree_smart_backspace   = 1
     let g:pear_tree_smart_closers     = 1
     let g:pear_tree_smart_openers     = 1
-  " <leader + /> to comment
+  "<leader + /> to comment
   Plug 'scrooloose/nerdcommenter'
   " multiple cursor w/ <C-n>
   Plug 'terryma/vim-multiple-cursors'
@@ -50,13 +49,20 @@ call plug#begin('~/.vim/autoload')
     xmap ga <Plug>(EasyAlign)
     nmap ga <Plug>(EasyAlign)
 
+  " abbreviate bad spelling, change cases
+  Plug 'tpope/vim-abolish'
+
+  " easymotion
+  Plug 'easymotion/vim-easymotion'
 
 
-" git gud
+"git gud
   Plug 'tpope/vim-fugitive'
-    nnoremap <silent> <leader>gs :Gstatus<CR>
-    nnoremap <silent> <leader>gd :Gdiff<CR>
-    set diffopt+=vertical "make diff vertical split
+    set diffopt+=vertical
+    nnoremap <silent> <leader>gd :Git diff<CR>
+    nnoremap <silent> <leader>gs :vertical Gstatus<CR>
+    nnoremap <silent> <leader>gb :Git blame<CR>
+
   Plug 'mhinz/vim-signify'
      set updatetime=100
      let g:signify_line_highlight = 1
@@ -74,6 +80,8 @@ call plug#begin('~/.vim/autoload')
 
 " theme
   Plug 'cocopon/iceberg.vim'
+  "colo iceberg                             "  current color theme
+
 
   "Plug 'junegunn/seoul256.vim'
 
@@ -92,7 +100,6 @@ call plug#begin('~/.vim/autoload')
   "let base16colorspace=256
   "colorscheme base16-default-dark
 
-
   "Plug 'nanotech/jellybeans.vim'
   "colorscheme jellybeans
 
@@ -104,13 +111,17 @@ call plug#begin('~/.vim/autoload')
 
   "Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
   "colorscheme challenger_deep
-
-
-
+  Plug 'w0ng/vim-hybrid'
 
 
 
 call plug#end()
+
+let g:hybrid_custom_term_colors = 1
+let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
+colorscheme hybrid
+
+
 
 
 
@@ -137,6 +148,10 @@ set history=1000                         "  increase undo limit
 set nowrap                               "  disable auto wrap
 set hidden                               "  save previous buffer stuff
                                          "" set path=$PWD/** "makes current vim path relative
+                                         "
+set noautochdir
+"no redirecting directory
+
 set ignorecase                           "  ignore case for search
 set smartcase                            "  automatically convert search to uppercase
 set noswapfile                           "  disable swap files
@@ -154,7 +169,6 @@ set termguicolors
 let &t_ZH='\e[3m'                        "  italics
 let &t_ZR='\e[23m'                       "  italics
 highlight Comment cterm=italic
-colo iceberg                             "  current color theme
 
 
 
@@ -162,7 +176,6 @@ set number relativenumber
 augroup numbertoggle "only use relativenumber on current window
   autocmd!
   autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-  "autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 augroup END
 set numberwidth=2
 highlight LineNr guibg=NONE
@@ -175,9 +188,10 @@ highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE gui
 
 
 
-
-
-
+" italic text
+let &t_ZH="\e[3m"
+let &t_ZR="\e[23m"
+highlight Comment cterm=italic gui=italic
 
 
 
@@ -185,7 +199,7 @@ highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE gui
 
 
 "  auto read when leaving window
-au FocusLost,WinLeave * :silent! noautocmd w 
+au FocusLost,WinLeave * :silent! noautocmd w
 au FocusGained,BufEnter * :checktime
 au CursorHold,CursorHoldI * checktime
 
@@ -201,12 +215,17 @@ au CursorHold,CursorHoldI * checktime
   :nmap ; :
 
 
+
 " nav
+  " probably a bad idea
+  " nnoremap 0 ^
+
   nnoremap J 5j
   nnoremap K 5k
   noremap vA ggVG
 
 " text editing
+  nnoremap Y ^y$
   map <leader>/ <Plug>NERDCommenterToggle
   " delete entire line
   nnoremap X yydd
@@ -240,8 +259,20 @@ au CursorHold,CursorHoldI * checktime
   let g:netrw_banner = 0         " remove banner
   let g:netrw_browse_split = 2   " default open vertical split
   let g:netrw_winsize = 25       " explorer width
-  let g:netrw_keepdir = 0
+  let g:netrw_keepdir = 1        " make netrw not change directory
   let g:ag_working_path_mode="r" " ag stuff
+
+
+augroup netrw_mapping
+ autocmd!
+ autocmd filetype netrw call NetrwMapping()
+augroup END
+
+function! NetrwMapping()
+    nnoremap <buffer> l <CR>
+endfunction
+
+
 
   "  turn off quickfix (annoying thing on bottom of screen) w/ <Leader + c> 
   nnoremap <silent> <Leader>c :call QuickFix_toggle()<CR>
@@ -282,11 +313,34 @@ au CursorHold,CursorHoldI * checktime
 
 
 "  _______________________________GENERAL REMAP_______________________________
+
+map <C-n> :cn<CR>
+map <C-p> :cp<CR>
+
+nmap s <Plug>(easymotion-bd-f)
+
+
+
+
+cmap w!! %!sudo tee > /dev/null
+
+
+" directory change
+  cnoreabbrev aa cd ~/Desktop/TuneCore
+  cnoreabbrev ss cd ~/Desktop/TuneCore/tc-www
+  cnoreabbrev dd cd ~/Desktop/TuneCore/tc-graphql
+  cnoreabbrev ff cd ~/Desktop/TuneCore/tc-studio
+
+
 " search
   cnoreabbrev rg Rg
   cnoreabbrev files GFiles
   cnoreabbrev f GFiles
-  nnoremap <silent> <C-f> :GFiles<CR>
+
+  nnoremap <silent>ff :Rg 
+  nnoremap <silent>FF :Files<CR>
+
+  "nnoremap <silent> <C-f> :GFiles<CR>
   " open new search for selected word
   map <leader>f :rg <c-r>=expand("<cword>")<cr><cr>
   " go to definition
@@ -296,9 +350,10 @@ au CursorHold,CursorHoldI * checktime
 
 
 " general
+  nmap <Leader>w :w<CR>
+  nmap <Leader>q :q<CR>
   nmap <Leader>b :Buffers<CR>
   nmap <Leader>h :History<CR>
-  nnoremap <leader>w :w<CR>
   " should open :History  in FZF
   cnoreabbrev QQ :browse oldfiles 
   command! FZFMru call fzf#run({
@@ -308,7 +363,6 @@ au CursorHold,CursorHoldI * checktime
   \  'down':    '40%'})
   cnoreabbrev Q :History
   cnoreabbrev tree :Explore
-  cnoreabbrev b :Buffers
   cnoreabbrev b :Buffers
   cnoreabbrev .. cd ..
 
@@ -325,16 +379,18 @@ au CursorHold,CursorHoldI * checktime
   cnoreabbrev n :vsplit ~/notes.md<CR>Go<CR>  
 
   " Source vim configuration file whenever it is saved
-  if has ('autocmd')          " Remain compatible with earlier versions
-   augroup Reload_Vimrc       " Group name.  Always use a unique name!
-      autocmd!
-      autocmd! BufWritePost $MYVIMRC source % | echom "Reloaded " . $MYVIMRC | redraw
-      autocmd! BufWritePost $MYGVIMRC if has('gui_running') | so % | echom "Reloaded " . $MYGVIMRC | endif | redraw
-    augroup END
-  endif " has autocmd
+  "autocmd bufwritepost .vimrc source $MYVIMRC
+  augroup MyAutoCmd
+    autocmd!
+    autocmd MyAutoCmd BufWritePost $MYVIMRC nested source $MYVIMRC
+augroup END
+
 
 
 " buffers
+
+
+
   cnoreabbrev save :SSave
   cnoreabbrev load :SLoad
   cnoreabbrev delete :SDelete
@@ -367,12 +423,21 @@ au CursorHold,CursorHoldI * checktime
 "nnoremap H :call JumpWithScrollOff('H')<CR>
 "nnoremap L :call JumpWithScrollOff('L')<CR>
 
-
+" todo  check if file is empty and skip in buffer
+" change notes to use empty 
+"
+nnoremap  <silent><leader><tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:b#<CR>
+nnoremap  <silent> <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
+nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 
 "open buffer
-nnoremap <leader>b :ls<cr>:b<space>
-nnoremap <leader>v :ls<cr>:vsp<space>\|<space>b<space>
-nnoremap <leader>s :ls<cr>:sp<space>\|<space>b<space>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <silent>bb :Buffers<CR>
+
+nnoremap <leader>v :vsp<space>\|:Buffers<CR>
+nnoremap <silent>vv :vsp<space>\|:Buffers<CR>
+
+nnoremap <leader>s :sp<space>\|:Buffers<CR>
 nnoremap <leader>o :only
 
 "resize window
@@ -395,8 +460,8 @@ nnoremap <silent> <Leader>= <C-w>=
 " Switch between windows
 let i = 1
 while i <= 9
-    execute 'nnoremap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
-    let i = i + 1
+  execute 'nnoremap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
+  let i = i + 1
 endwhile
 " go back to previously selected window
 nnoremap <Leader>0 <c-w><c-p>
@@ -404,8 +469,8 @@ nnoremap <Leader>0 <c-w><c-p>
 " put window # in status line
 "set statusline+=%{WindowNumber()}
 function! WindowNumber()
-    let str=tabpagewinnr(tabpagenr())
-    return str
+  let str=tabpagewinnr(tabpagenr())
+  return str
 endfunction
 
 set statusline=%{WindowNumber()}\ %f\ %h%w%m%r%=%-14.(%l,%c%V%)\ %P
@@ -420,15 +485,21 @@ nnoremap <Leader>ln :rightbelow vnew<CR>
 nnoremap <Leader>kn :leftabove  new<CR>
 nnoremap <Leader>jn :rightbelow new<CR>
 
-nnoremap <Leader>HH :leftabove  vnew<CR>:Rg<CR>
-nnoremap <Leader>LL :rightbelow vnew<CR>:Rg<CR>
-nnoremap <Leader>KK :leftabove  new<CR>:Rg<CR>
-nnoremap <Leader>JJ :rightbelow new<CR>:Rg<CR>
+nnoremap <Leader>hb :leftabove  vnew<CR>:Buffers<CR>
+nnoremap <Leader>lb :rightbelow vnew<CR>:Buffers<CR>
+nnoremap <Leader>kb :leftabove  new<CR>:Buffers<CR>
+nnoremap <Leader>jb :rightbelow new<CR>:Buffers<CR>
 
-nnoremap <Leader>H<Space>  :leftabove  vnew<CR>:Rg<CR>
-nnoremap <Leader>L<Space>  :rightbelow vnew<CR>:Rg<CR>
-nnoremap <Leader>K<Space>  :leftabove  new<CR>:Rg<CR>
-nnoremap <Leader>J<Space>  :rightbelow new<CR>:Rg<CR>
+
+nnoremap <Leader>HH :leftabove  vnew<CR>:Rg!<CR>
+nnoremap <Leader>LL :rightbelow vnew<CR>:Rg!<CR>
+nnoremap <Leader>KK :leftabove  new<CR>:Rg!<CR>
+nnoremap <Leader>JJ :rightbelow new<CR>:Rg!<CR>
+
+nnoremap <Leader>H<Space>  :leftabove  vnew<CR>:Files!<CR>
+nnoremap <Leader>L<Space>  :rightbelow vnew<CR>:Files!<CR>
+nnoremap <Leader>K<Space>  :leftabove  new<CR>:Files!<CR>
+nnoremap <Leader>J<Space>  :rightbelow new<CR>:Files!<CR>
 
 nnoremap <silent> <Leader>hh :call JumpOrOpenNewSplit('h', ':leftabove vnew', 0)<CR>
 nnoremap <silent> <Leader>ll :call JumpOrOpenNewSplit('l', ':rightbelow vnew', 0)<CR>
@@ -462,4 +533,25 @@ endfunction " }}}
 
 
 "ADD LEADER L F to CREATE NEW FIND WINDOW
+"
+"
+"
+function! s:list_buffers()
+  redir => list
+  silent ls
+  redir END
+  return split(list, "\n")
+endfunction
+
+function! s:delete_buffers(lines)
+  execute 'bwipeout' join(map(a:lines, {_, line -> split(line)[0]}))
+endfunction
+
+command! B call fzf#run(fzf#wrap({
+  \ 'source': s:list_buffers(),
+  \ 'sink*': { lines -> s:delete_buffers(lines) },
+  \ 'options': '--multi --reverse --bind ctrl-a:select-all+accept'
+\ }))
+
+
 
