@@ -10,31 +10,21 @@
 # defaults write -g InitialKeyRepeat -int 10 # normal minimum is 15 (225 ms)
 # defaults write -g KeyRepeat -int 1 # normal minimum is 2 (30 ms)
 
-# sourcing
-if [[ -f ~/.tc_settings ]]; then
-  source ~/.tc_settings
-  alias st='source $HOME/.tc_settings; echo "sourced tc_settings"'
-fi
-
-if [[ -f ~/.personal ]]; then
-  source ~/.personal
-  alias st='source $HOME/.personal'
-fi
-
 #_______ZSH STUFF_________
-if [[ -f ~/.oh-my-zsh ]]; then
-  source ~/.oh-my-zsh
-fi
 
 
+export ZSH="~/.oh-my-zsh"
+source $ZSH/oh-my-zsh.sh
 ZSH_THEME=""
 CASE_SENSITIVE="false"
 HYPHEN_INSENSITIVE="true"
 plugins=(git)
 fpath=(~/.zsh $fpath)
+fpath+=$HOME/.zsh/pure
+
 autoload -Uz compinit && compinit
 autoload -U promptinit; promptinit
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 prompt pure
 
 #_______GIT STUFF_________
@@ -53,9 +43,11 @@ alias gst='git stash'
 alias gsp='git stash pop'
 alias gl='git log'
 alias gd='git diff'
+alias gdd='git diff master..'
 alias gf='git checkout `git branch --format="%(refname:short)" | fzf`'
 alias gdel='git branch -d'
 alias gpom='git pull origin master'
+alias mux='tmuxinator'
 #alias nah="git reset --hard"
 
 # reset file if provided, otherwise entire branch
@@ -100,6 +92,7 @@ function reset() {
 
 #___________GENERAL__________
 export TERM="xterm-256color"
+export EDITOR='vim'
 alias ..='cd ..'
 alias c=code
 alias v='vim -S ~/.vimrc'
@@ -119,8 +112,8 @@ alias sz='source $HOME/.zshrc ; echo "sourced .zshrc"'
 alias ve='v $HOME/.vimrc'
 alias ze='v $HOME/.zshrc'
 alias te='v $HOME/.tc_settings'
-alias n='v $HOME/notes.md'
-alias notes='v $HOME/notes.md'
+alias n='vim "+normal Go" $HOME/notes.md'
+#alias n='vim "+normal G$" +startinsert $HOME/notes.md'
 
 # tags
 alias ctags="`brew --prefix`/bin/ctags"
@@ -259,3 +252,18 @@ function git_repo() {
   #eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed -r 's/ *[0-9]*\*? *//' | sed -r 's/\\/\\\\/g')
 #}
 
+
+# sourcing
+if [[ -f ~/.tc_settings ]]; then
+  source ~/.tc_settings
+  alias st='source $HOME/.tc_settings; echo "sourced tc_settings"'
+fi
+
+if [[ -f ~/.personal ]]; then
+  source ~/.personal
+  alias st='source $HOME/.personal; echo "sourced personal'
+fi
+
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

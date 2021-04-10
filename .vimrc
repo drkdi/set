@@ -1,6 +1,8 @@
 "  _______________________________PLUGS_______________________________
 "  :PlugInstall, :PlugClean
 
+" vim plug
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -19,7 +21,7 @@ call plug#begin('~/.vim/autoload')
 
 " tmux navigation
   Plug 'christoomey/vim-tmux-navigator'
-  " default home screen
+" default home screen
   Plug 'mhinz/vim-startify'
     let g:startify_files_number = 15
 
@@ -58,11 +60,11 @@ call plug#begin('~/.vim/autoload')
 
 "git gud
   Plug 'tpope/vim-fugitive'
-    set diffopt+=vertical
+    "set diffopt+=vertical
     nnoremap <silent> <leader>gd :Git diff<CR>
     nnoremap <silent> <leader>gs :vertical Gstatus<CR>
     nnoremap <silent> <leader>gb :Git blame<CR>
-
+" show = - changes
   Plug 'mhinz/vim-signify'
      set updatetime=100
      let g:signify_line_highlight = 1
@@ -80,15 +82,11 @@ call plug#begin('~/.vim/autoload')
 
 " theme
   Plug 'cocopon/iceberg.vim'
-  "colo iceberg                             "  current color theme
-
-
+  Plug 'thiagoalessio/rainbow_levels.vim'
   "Plug 'junegunn/seoul256.vim'
-
-  "Plug 'nightsense/snow'
   "colo seoul256
+
   "let g:seoul256_background = 234
-  "set background=dark
 
   "Plug 'nightsense/snow'
   "colorscheme snow
@@ -112,6 +110,14 @@ call plug#begin('~/.vim/autoload')
   "Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
   "colorscheme challenger_deep
   Plug 'w0ng/vim-hybrid'
+  "Plug 'drewtempelmeyer/palenight.vim'
+
+
+
+  "phraseapp YML specific
+  Plug 'airblade/vim-localorie'
+  Plug 'luochen1990/rainbow'
+
 
 
 
@@ -119,20 +125,35 @@ call plug#end()
 
 let g:hybrid_custom_term_colors = 1
 let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
-colorscheme hybrid
+set term=screen-256color
+set background=dark
+
+colorscheme iceberg
 
 
+let &runtimepath = '~/.vim/bundle/rainbow,' . &runtimepath
+
+let g:rainbow_active = 1
+
+hi! link RainbowLevel0 Constant
+hi! link RainbowLevel1 Type
+hi! link RainbowLevel2 Function
+hi! link RainbowLevel3 String
+hi! link RainbowLevel4 PreProc
+hi! link RainbowLevel5 Statement
+hi! link RainbowLevel6 Identifier
+hi! link RainbowLevel7 Normal
+hi! link RainbowLevel8 Comment
+
+map <leader>l :RainbowLevelsToggle<cr>
 
 
-
-                                         "  _______________________________OG_______________________________
+"  _______________________________OG_______________________________
 set nocompatible                         "  system-wide vimrc
 set backspace=indent,eol,start           "  backspace over indentation, etc
 set ruler                                "  always show cursor position
 set splitright                           "  default split right
-"set relativenumber                       "  show relative line number of left
-"set number                               "  show current line number at cursor
-set mouse=a
+set mouse=a                             " use mouse
 set cursorline                           "  line at cursor row
 set incsearch                            "  incremental search for partial /
 set hlsearch                             "  search highlighting /
@@ -148,16 +169,12 @@ set history=1000                         "  increase undo limit
 set nowrap                               "  disable auto wrap
 set hidden                               "  save previous buffer stuff
                                          "" set path=$PWD/** "makes current vim path relative
-                                         "
-set noautochdir
-"no redirecting directory
-
+set noautochdir                           "no redirecting directory
 set ignorecase                           "  ignore case for search
 set smartcase                            "  automatically convert search to uppercase
 set noswapfile                           "  disable swap files
 set tags=tags;/                          "  tags
 set t_Co=256
-set background=dark
 set clipboard^=unnamed,unnamedplus       "  use system clipboard
 set scrolloff=10                         "  lines of buffer between top and bottom
 set ttimeout
@@ -170,8 +187,8 @@ let &t_ZH='\e[3m'                        "  italics
 let &t_ZR='\e[23m'                       "  italics
 highlight Comment cterm=italic
 
-
-
+"set relativenumber                       "  show relative line number of left
+"set number                               "  show current line number at cursor
 set number relativenumber
 augroup numbertoggle "only use relativenumber on current window
   autocmd!
@@ -184,26 +201,85 @@ highlight clear SignColumn
 highlight clear LineNr
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=NONE guibg=NONE
 
-
-
-
-
 " italic text
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m"
 highlight Comment cterm=italic gui=italic
-
-
-
-
-
 
 "  auto read when leaving window
 au FocusLost,WinLeave * :silent! noautocmd w
 au FocusGained,BufEnter * :checktime
 au CursorHold,CursorHoldI * checktime
 
+" Source vim configuration file whenever it is saved
+  "autocmd bufwritepost .vimrc source $MYVIMRC
+augroup MyAutoCmd
+  autocmd!
+  autocmd MyAutoCmd BufWritePost $MYVIMRC nested source $MYVIMRC
+augroup END
 
+if exists('$TMUX')
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+else
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
+
+"??????????????????
+inoremap <C-c> <C-c>:doautocmd InsertLeave<CR>
+
+set cul
+
+"  _______________________________FILE NAVIGATION_______________________________
+" :Explore, file navigation
+  let g:netrw_preview        = 1
+  let g:netrw_liststyle      = 3      " tree structure
+  let g:netrw_banner         = 0         " remove banner
+  let g:netrw_browse_split   = 2   " default open vertical split
+  let g:netrw_winsize        = 25       " explorer width
+  let g:netrw_keepdir        = 1        " make netrw not change directory
+  let g:ag_working_path_mode = "r" " ag stuff
+
+augroup netrw_mapping
+ autocmd!
+ autocmd filetype netrw call NetrwMapping()
+augroup END
+
+function! NetrwMapping()
+    nnoremap <buffer> l <CR>
+endfunction
+
+  "  turn off quickfix (annoying thing on bottom of screen) w/ <Leader + c>
+  nnoremap <silent> <Leader>c :call QuickFix_toggle()<CR>
+  function! QuickFix_toggle()
+      for i in range(1, winnr('$'))
+          let bnum = winbufnr(i)
+          if getbufvar(bnum, '&buftype') == 'quickfix'
+              cclose
+              return
+          endif
+      endfor
+      copen
+  endfunction
+
+
+"  _______________________________FILE SEARCH_______________________________
+" Rg ripgrep search
+  command! -bang -nargs=* Rg
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+    \   fzf#vim#with_preview(), <bang>0 )
+" RG full screen
+  "command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+  "function! RipgrepFzf(query, fullscreen)
+    "let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+    "let initial_command = printf(command_fmt, shellescape(a:query))
+    "let reload_command = printf(command_fmt, '{q}')
+    "let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+    "call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+  "endfunction
 
 
 "  _______________________________TEXT EDITING_______________________________
@@ -211,23 +287,23 @@ au CursorHold,CursorHoldI * checktime
 " default 
   map <Space> <Leader>
   let mapleader = "\<Space>"
-  " lazybois remap ; to :, it's fine cause w/ clever-f you can just repeat f
-  :nmap ; :
-
-
-
-" nav
-  " probably a bad idea
+  " remap ; to :
+  nmap ; :
   " nnoremap 0 ^
-
   nnoremap J 5j
   nnoremap K 5k
   noremap vA ggVG
+  inoremap jj <ESC>
+
 
 " text editing
+  set pastetoggle=<F2>
+
   nnoremap Y ^y$
+  " netrw tree
+  map <leader>t :Explore<cr>
   map <leader>/ <Plug>NERDCommenterToggle
-  " delete entire line
+  " cut line
   nnoremap X yydd
   " don't overwrite register
   noremap d "_d
@@ -245,85 +321,100 @@ au CursorHold,CursorHoldI * checktime
 " undo
   noremap U <C-r><CR>
 
+" autocomplete
+  imap bp binding.pry
+  imap bpp <%= binding.pry %>
 
 
+" delete empty lines in visual
+ vnoremap de :g/^\s*$/d<CR>:noh<CR>
 
 
-
-
-
-"  _______________________________FILE NAVIGATION_______________________________
-" :Explore, file navigation
-  let g:netrw_preview = 1
-  let g:netrw_liststyle = 3      " tree structure
-  let g:netrw_banner = 0         " remove banner
-  let g:netrw_browse_split = 2   " default open vertical split
-  let g:netrw_winsize = 25       " explorer width
-  let g:netrw_keepdir = 1        " make netrw not change directory
-  let g:ag_working_path_mode="r" " ag stuff
-
-
-augroup netrw_mapping
- autocmd!
- autocmd filetype netrw call NetrwMapping()
-augroup END
-
-function! NetrwMapping()
-    nnoremap <buffer> l <CR>
+ let g:last_join_separator = " "
+function! s:interactiveJoin(use_last_sep,...) range
+    if (a:use_last_sep == 0) "interactive, ask for separator to use
+        call inputsave()
+        echohl Question
+        let l:sep = input("Separator:", g:last_join_separator)
+        echohl None
+        call inputrestore()
+        redraw!
+        let g:last_join_separator = l:sep "update last separator value
+    else "non-interactive (when repeating with '.')
+        let l:sep = g:last_join_separator
+    endif
+    if (a:0 == 0) "with no argument, remove indentation *and trailing spaces*
+        let l:subst = 's/\s*\n\+\s*/\=' . "'" . l:sep . "'/"
+    else " don't remove indentation or trailing spaces (act like 'gJ')
+        let l:subst = 's/\n\+/\=' . "'" . l:sep . "'/"
+    endif
+    if a:firstline < a:lastline "join given range
+        execute a:firstline . ',' . (a:lastline - 1) . l:subst
+        let l:count = a:lastline - a:firstline + 1 "default count for repeat
+    else "or join only with next line
+        execute l:subst
+        let l:count = 1 "default count for repeat
+    endif
+    "make command repeatable
+    "(with the tpope/vim-repeat plugin: optional, recommended)
+    if (a:0 == 0)
+        silent! call repeat#set("\<Plug>(repeatJoin)", l:count)
+    else
+        silent! call repeat#set("\<Plug>(repeatGJoin)", l:count)
+    endif
 endfunction
 
+noremap <silent> <Plug>(interactiveJoin)  :call <SID>interactiveJoin(0)<CR>
+noremap <silent> <Plug>(interactiveGJoin) :call <SID>interactiveJoin(0,'g')<CR>
+noremap <silent> <Plug>(repeatJoin)       :call <SID>interactiveJoin(1)<CR>
+noremap <silent> <Plug>(repeatGJoin)      :call <SID>interactiveJoin(1,'g')<CR>
+nmap z <Plug>(interactiveJoin)
+xmap z <Plug>(interactiveJoin)
+nmap gJ <Plug>(interactiveGJoin)
+xmap gJ <Plug>(interactiveGJoin)
 
+" split on |
 
-  "  turn off quickfix (annoying thing on bottom of screen) w/ <Leader + c> 
-  nnoremap <silent> <Leader>c :call QuickFix_toggle()<CR>
-  function! QuickFix_toggle()
-      for i in range(1, winnr('$'))
-          let bnum = winbufnr(i)
-          if getbufvar(bnum, '&buftype') == 'quickfix'
-              cclose
-              return
-          endif
-      endfor
-      copen
-  endfunction
+command! -bang -nargs=* -range LineBreakAt <line1>,<line2>call LineBreakAt('<bang>', <f-args>)
 
+"figure out how to == fix line indent
+function! LineBreakAt(bang, ...) range
+  let save_search = @/
+  if empty(a:bang)
+    let before = ''
+    let after = '\ze.'
+    let repl = '&\r'
+  else
+    let before = '.\zs'
+    let after = ''
+    let repl = '\r&'
+  endif
+  let pat_list = map(deepcopy(a:000), "escape(v:val, '/\\.*$^~[')")
+  let find = empty(pat_list) ? @/ : join(pat_list, '\|')
+  let find = before . '\%(' . find . '\)' . after
+  " Example: 10,20s/\%(arg1\|arg2\|arg3\)\ze./&\r/ge
+  execute a:firstline . ',' . a:lastline . 's/'. find . '/' . repl . '/ge'
+  let @/ = save_search
+endfunction
 
-
-
-
-"  _______________________________FILE SEARCH_______________________________
-" Rg ripgrep search
-  command! -bang -nargs=* Rg
-    \ call fzf#vim#grep(
-    \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-    \   fzf#vim#with_preview(), <bang>0 )
-
-" RG full screen
-  "command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-
-  "function! RipgrepFzf(query, fullscreen)
-    "let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-    "let initial_command = printf(command_fmt, shellescape(a:query))
-    "let reload_command = printf(command_fmt, '{q}')
-    "let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-    "call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-  "endfunction
-
-
+vnoremap s :LineBreakAt
+nnoremap S :LineBreakAt
 
 
 "  _______________________________GENERAL REMAP_______________________________
 
+" next / previous 
 map <C-n> :cn<CR>
 map <C-p> :cp<CR>
-
 nmap s <Plug>(easymotion-bd-f)
-
-
-
-
 cmap w!! %!sudo tee > /dev/null
 
+" yank yml file key
+  nnoremap <leader>yyp :call ExpandPhraseKey()<CR>
+  function! ExpandPhraseKey()
+    let @+=localorie#expand_key()
+    echo @+
+  endfunction
 
 " directory change
   cnoreabbrev aa cd ~/Desktop/TuneCore
@@ -331,40 +422,34 @@ cmap w!! %!sudo tee > /dev/null
   cnoreabbrev dd cd ~/Desktop/TuneCore/tc-graphql
   cnoreabbrev ff cd ~/Desktop/TuneCore/tc-studio
 
-
 " search
   cnoreabbrev rg Rg
   cnoreabbrev files GFiles
   cnoreabbrev f GFiles
+  nnoremap <silent>ff :Rg <c-r>=expand("")<cr>
+  nnoremap <silent>FF :Files<cr>
+  "map <leader>F :Files <c-r>=expand("")<cr>
 
-  nnoremap <silent>ff :Rg 
-  nnoremap <silent>FF :Files<CR>
-
-  "nnoremap <silent> <C-f> :GFiles<CR>
-  " open new search for selected word
+  " search code for references
   map <leader>f :rg <c-r>=expand("<cword>")<cr><cr>
   " go to definition
   nnoremap <leader>d :vsplit<CR>:exec("tag ".expand("<cword>"))<CR>
 
-  map <leader>t :Explore<cr>
-
-
 " general
   nmap <Leader>w :w<CR>
   nmap <Leader>q :q<CR>
+  cnoreabbrev b :Buffers
   nmap <Leader>b :Buffers<CR>
-  nmap <Leader>h :History<CR>
-  " should open :History  in FZF
+  nmap <Leader>Q :History<CR>
   cnoreabbrev QQ :browse oldfiles 
+  cnoreabbrev Q :History
+  cnoreabbrev .. cd ..
+
   command! FZFMru call fzf#run({
   \  'source':  v:oldfiles,
   \  'sink':    'e',
   \  'options': '-m -x +s',
   \  'down':    '40%'})
-  cnoreabbrev Q :History
-  cnoreabbrev tree :Explore
-  cnoreabbrev b :Buffers
-  cnoreabbrev .. cd ..
 
 " source / edit
   " source vimrc
@@ -378,36 +463,20 @@ cmap w!! %!sudo tee > /dev/null
   " edit notes w/ new line on bottom
   cnoreabbrev n :vsplit ~/notes.md<CR>Go<CR>  
 
-  " Source vim configuration file whenever it is saved
-  "autocmd bufwritepost .vimrc source $MYVIMRC
-  augroup MyAutoCmd
-    autocmd!
-    autocmd MyAutoCmd BufWritePost $MYVIMRC nested source $MYVIMRC
-augroup END
-
-
-
 " buffers
-
-
-
   cnoreabbrev save :SSave
   cnoreabbrev load :SLoad
   cnoreabbrev delete :SDelete
+
   "yank relative buffer path
-  nnoremap <Leader>yp :let @+=expand("%")<CR> 
+  "nnoremap <Leader>yp :let @+=expand("%")<CR> 
+  nnoremap <Leader>yp :call CopyCurrentFilePath()<CR> 
   " Copy current file path to clipboard
   nnoremap <leader>% :call CopyCurrentFilePath()<CR>
   function! CopyCurrentFilePath()
     let @+ = expand('%')
     echo @+
   endfunction
-
-
-" insert move autocomplete
-  imap bp binding.pry
-  imap bpp <%= binding.pry %>
-
 
 
 "_______________________________ BUFFER / WINDOW
@@ -425,6 +494,7 @@ augroup END
 
 " todo  check if file is empty and skip in buffer
 " change notes to use empty 
+" add Switch between buffers w/ !@#$%^&*()
 "
 nnoremap  <silent><leader><tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:b#<CR>
 nnoremap  <silent> <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
@@ -432,7 +502,7 @@ nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :wri
 
 "open buffer
 nnoremap <leader>b :Buffers<CR>
-nnoremap <silent>bb :Buffers<CR>
+"nnoremap <silent>bb :Buffers<CR>
 
 nnoremap <leader>v :vsp<space>\|:Buffers<CR>
 nnoremap <silent>vv :vsp<space>\|:Buffers<CR>
@@ -444,18 +514,6 @@ nnoremap <leader>o :only
 nnoremap <silent> <Leader>> 20<C-w>>
 nnoremap <silent> <Leader>< 20<C-w><
 nnoremap <silent> <Leader>= <C-w>=
-
-
-" Switch between tabs
-"nmap <leader>1 1gt
-"nmap <leader>2 2gt
-"nmap <leader>3 3gt
-"nmap <leader>4 4gt
-"nmap <leader>5 5gt
-"nmap <leader>6 6gt
-"nmap <leader>7 7gt
-"nmap <leader>8 8gt
-"nmap <leader>9 9gt
 
 " Switch between windows
 let i = 1
@@ -474,10 +532,6 @@ function! WindowNumber()
 endfunction
 
 set statusline=%{WindowNumber()}\ %f\ %h%w%m%r%=%-14.(%l,%c%V%)\ %P
-
-"set statusline=\ %{WindowNumber()}\ %t 
-
-" add Switch between buffers w/ !@#$%^&*()
 
 " Creating splits with empty buffers in all directions
 nnoremap <Leader>hn :leftabove  vnew<CR>
@@ -531,11 +585,7 @@ function! JumpOrOpenNewSplit(key, cmd, fzf) " {{{
   endif
 endfunction " }}}
 
-
 "ADD LEADER L F to CREATE NEW FIND WINDOW
-"
-"
-"
 function! s:list_buffers()
   redir => list
   silent ls
@@ -554,4 +604,26 @@ command! B call fzf#run(fzf#wrap({
 \ }))
 
 
+
+function! YAMLTree()
+    let l:list = []
+    let l:cur = getcurpos()[1]
+    " Retrieve the current line indentation
+    let l:indent = indent(l:cur) + 1
+    " Loop from the cursor position to the top of the file
+    for l:n in reverse(range(1, l:cur))
+        let l:i = indent(l:n)
+        let l:line = getline(l:n)
+        let l:key = substitute(l:line, '^\s*\(\<\w\+\>\):.*', "\\1", '')
+        " If the indentation decreased and the pattern matched
+        if (l:i < l:indent && l:key !=# l:line)
+            let l:list = add(l:list, l:key)
+            let l:indent = l:i
+        endif
+    endfor
+    let l:list = reverse(l:list)
+    echo join(l:list, ' -> ')
+endfunction
+
+nnoremap <F5> :call YAMLTree()<CR>
 
